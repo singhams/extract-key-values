@@ -1,4 +1,4 @@
-# Excel Key-Value Extractor and Unpivot Tool
+# Excel Key-Value Extractor and Unpivot Tool (Single Key)
 Sometimes you get a spreadsheet with a column that contains a bunch of different key:value pairs in a single cell. The data in one particular cell might look something like this:
 
 ```industry:healthcare,industry:laboratory,audience:corporate,audience:all,topic:science,topic:math``` etc. etc. 

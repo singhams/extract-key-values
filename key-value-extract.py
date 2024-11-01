@@ -3,11 +3,11 @@ import pandas as pd
 from io import BytesIO
 
 # Function to extract key-value pairs
-def extract_key_values(row, key):
-    items = row.split(',')
-    key_values = [item for item in items if item.startswith(key)]
+def extract_key_values(row, pair_delimiter, kv_delimiter, key):
+    items = row.split(pair_delimiter)
+    key_values = [item for item in items if item.startswith(key + kv_delimiter)]
     return key_values
-
+    
 # Display the contents of the README.md file
 def display_readme():
     try:

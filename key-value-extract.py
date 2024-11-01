@@ -52,6 +52,9 @@ if st.button("Process File"):
         # Rename the columns to the actual keys
         extracted_df.columns = [f'{col}' for col in extracted_df.columns]
 
+        # Create a new column for the key without the sequence number
+        df['key'] = df[key_column].apply(lambda row: ', '.join(extract_key_values(row, pair_delimiter, kv_delimiter).keys()))
+
         # Concatenate the original DataFrame with the new extracted columns
         df = pd.concat([df, extracted_df], axis=1)
 
@@ -63,7 +66,7 @@ if st.button("Process File"):
 
         unpivoted_df = df.melt(id_vars=[col for col in df.columns if col not in new_columns],
                                value_vars=new_columns,
-                               var_name='key',
+                               var_name='key_type',
                                value_name='value')
 
         # Drop rows with NaN values in the unpivoted columns
@@ -72,7 +75,16 @@ if st.button("Process File"):
         # Convert DataFrame to Excel
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            unpivoted_df.to_excel(writer, sheet_name='Flattened', index=False)
+            df.to_excel(writer, sheet_name='Flattened', index=False)
+            unpivoted_df.to_excel(writer, sheet_name='Unpivoted', index=False)
+        output.seek(0)
 
-        # Provide download link
-        st.download_button("Download Excel", data=output.getvalue(), file_name='flattened.xlsx', key="download_excel")
+        # Provide download link for the Excel file
+        st.download_button(
+            label="Download Processed Excel file",
+            data=output,
+            file_name="processed_output.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    else:
+        st.error("Please upload an Excel file and provide the necessary inputs.")

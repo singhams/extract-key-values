@@ -49,8 +49,8 @@ if st.button("Process File"):
         # Expand the extracted column into separate columns
         extracted_df = df['extracted'].apply(pd.Series)
 
-        # Rename the columns to key 1, key 2, etc.
-        extracted_df.columns = [f'{key or "key"} {i+1}' for i in range(extracted_df.shape[1])]
+        # Rename the columns to the actual keys
+        extracted_df.columns = [f'{col}' for col in extracted_df.columns]
 
         # Concatenate the original DataFrame with the new extracted columns
         df = pd.concat([df, extracted_df], axis=1)
@@ -59,15 +59,15 @@ if st.button("Process File"):
         df.drop(columns=['extracted'], inplace=True)
 
         # Unpivot the new columns
-        new_columns = [col for col in df.columns if col.startswith(key or "key")]
+        new_columns = [col for col in df.columns if col in extracted_df.columns]
 
         unpivoted_df = df.melt(id_vars=[col for col in df.columns if col not in new_columns],
                                value_vars=new_columns,
-                               var_name=f'{key or "key"}_type',
-                               value_name=f'{key or "key"}_value')
+                               var_name='key',
+                               value_name='value')
 
         # Drop rows with NaN values in the unpivoted columns
-        unpivoted_df.dropna(subset=[f'{key or "key"}_value'], inplace=True)
+        unpivoted_df.dropna(subset=['value'], inplace=True)
 
         # Convert DataFrame to Excel
         output = BytesIO()

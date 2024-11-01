@@ -5,7 +5,11 @@ from io import BytesIO
 # Function to extract key-value pairs
 def extract_key_values(row, pair_delimiter, kv_delimiter, key):
     items = row.split(pair_delimiter)
-    key_values = [item for item in items if item.startswith(key + kv_delimiter)]
+    key_values = {}
+    for item in items:
+        if item.startswith(key + kv_delimiter):
+            k, v = item.split(kv_delimiter, 1)
+            key_values[k.strip()] = v.strip()
     return key_values
 
 # Display the contents of the README.md file
@@ -46,8 +50,8 @@ if st.button("Process File"):
         # Expand the key column into separate columns
         key_df = df[key].apply(pd.Series)
 
-        # Rename the columns to key 1, key 2, etc.
-        key_df.columns = [f'{key} {i+1}' for i in range(key_df.shape[1])]
+        # Rename the columns to key_n
+        key_df.columns = [f'{key}_{i+1}' for i in range(key_df.shape[1])]
 
         # Concatenate the original DataFrame with the new key columns
         df = pd.concat([df, key_df], axis=1)
@@ -81,4 +85,4 @@ if st.button("Process File"):
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
     else:
-        st.error("Please upload an Excel file and provide both the column name and key.")
+        st.error("Please upload an Excel file and provide all necessary inputs.")

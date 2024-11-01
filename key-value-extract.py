@@ -1,3 +1,7 @@
+import streamlit as st
+import pandas as pd
+from io import BytesIO
+
 # Display the contents of the README.md file
 def display_readme():
     try:
@@ -8,10 +12,6 @@ def display_readme():
         st.error("README.md file not found.")
 
 display_readme()
-
-import streamlit as st
-import pandas as pd
-from io import BytesIO
 
 # Function to extract key-value pairs
 def extract_key_values(row):

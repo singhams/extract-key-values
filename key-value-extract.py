@@ -31,9 +31,6 @@ def extract_key_values(row, pair_delimiter, key_value_delimiter):
             key_values[unique_key] = value
     return key_values
 
-# Streamlit app
-st.title("Excel Key-Value Extractor and Unpivot Tool")
-
 # File uploader for Excel input
 uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 

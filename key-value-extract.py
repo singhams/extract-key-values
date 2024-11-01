@@ -14,13 +14,13 @@ def display_readme():
 display_readme()
 
 # Function to extract key-value pairs
-def extract_key_values(row):
-    items = row.split(',')
+def extract_key_values(row, pair_delimiter, key_value_delimiter):
+    items = row.split(pair_delimiter)
     key_values = {}
     key_count = {}
     for item in items:
-        if ':' in item:
-            key, value = item.split(':', 1)
+        if key_value_delimiter in item:
+            key, value = item.split(key_value_delimiter, 1)
             key = key.strip()
             value = value.strip()
             if key in key_count:
@@ -40,14 +40,20 @@ uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 # Input for column name
 key_column = st.text_input("Enter the column name containing key-value pairs", value="column_name")
 
+# Input for pair delimiter
+pair_delimiter = st.text_input("Enter the delimiter for key-value pairs", value=",")
+
+# Input for key-value delimiter
+key_value_delimiter = st.text_input("Enter the delimiter for keys and values", value=":")
+
 # Button to process the file
 if st.button("Process File"):
-    if uploaded_file is not None and key_column:
+    if uploaded_file is not None and key_column and pair_delimiter and key_value_delimiter:
         # Load the Excel file into a DataFrame
         df = pd.read_excel(uploaded_file)
 
         # Apply the function to the specified column in the DataFrame
-        key_values_df = df[key_column].apply(lambda row: pd.Series(extract_key_values(row)))
+        key_values_df = df[key_column].apply(lambda row: pd.Series(extract_key_values(row, pair_delimiter, key_value_delimiter)))
 
         # Concatenate the original DataFrame with the new key columns
         df = pd.concat([df, key_values_df], axis=1)
@@ -81,4 +87,4 @@ if st.button("Process File"):
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
     else:
-        st.error("Please upload an Excel file and provide the column name.")
+        st.error("Please upload an Excel file and provide the column name and delimiters.")

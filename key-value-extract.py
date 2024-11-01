@@ -8,8 +8,16 @@ def extract_key_values(row, key):
     key_values = [item for item in items if item.startswith(key)]
     return key_values
 
-# Streamlit app
-st.title("Excel Key-Value Extractor and Unpivot Tool")
+# Display the contents of the README.md file
+def display_readme():
+    try:
+        with open("README.md", "r") as f:
+            readme_content = f.read()
+        st.markdown(readme_content)
+    except FileNotFoundError:
+        st.error("README.md file not found.")
+
+display_readme()
 
 # File uploader for Excel input
 uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")

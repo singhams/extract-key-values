@@ -3,8 +3,8 @@ import pandas as pd
 from io import BytesIO
 
 # Function to extract key-value pairs
-def extract_key_values(row, key=None):
-    items = row.split(',')
+def extract_key_values(row, delimiter, key=None):
+    items = row.split(delimiter)
     if key:
         key_values = [item for item in items if item.startswith(key)]
     else:
@@ -20,6 +20,9 @@ uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 # Input for column name
 key_column = st.text_input("Enter the column name containing key-value pairs", value="column_name")
 
+# Input for delimiter
+delimiter = st.text_input("Enter the delimiter used in the key-value pairs", value=",")
+
 # Radio button to choose extraction mode
 extraction_mode = st.radio("Choose extraction mode", ("Extract all key-value pairs", "Extract specific key-value pairs"))
 
@@ -31,12 +34,12 @@ else:
 
 # Button to process the file
 if st.button("Process File"):
-    if uploaded_file is not None and key_column:
+    if uploaded_file is not None and key_column and delimiter:
         # Load the Excel file into a DataFrame
         df = pd.read_excel(uploaded_file)
 
         # Apply the function to the specified column in the DataFrame
-        df['extracted'] = df[key_column].apply(lambda row: extract_key_values(row, key))
+        df['extracted'] = df[key_column].apply(lambda row: extract_key_values(row, delimiter, key))
 
         # Expand the extracted column into separate columns
         extracted_df = df['extracted'].apply(pd.Series)

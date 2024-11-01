@@ -17,10 +17,18 @@ display_readme()
 def extract_key_values(row):
     items = row.split(',')
     key_values = {}
+    key_count = {}
     for item in items:
         if ':' in item:
             key, value = item.split(':', 1)
-            key_values[key.strip()] = value.strip()
+            key = key.strip()
+            value = value.strip()
+            if key in key_count:
+                key_count[key] += 1
+            else:
+                key_count[key] = 1
+            unique_key = f"{key}_{key_count[key]}"
+            key_values[unique_key] = value
     return key_values
 
 # Streamlit app

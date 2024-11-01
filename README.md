@@ -1,5 +1,5 @@
 # Excel Key-Value Extractor and Unpivot Tool
-Sometimes you get a metadata export from a system like AEM, which has a generic field for Tags that may contain a bunch of different key:value pairs in a single cell. For example, the data in one particular cell might look something like: `industry:healthcare,industry:laboratory,audience:corporate,audience:all,topic:science,topic:math` etc. etc. It can be helpful to parse this out so we can analyze each attribute separately.
+Sometimes you get a spreadsheet with a column that contains a bunch of different key:value pairs in a single cell. The data in one particular cell might look something like: `industry:healthcare,industry:laboratory,audience:corporate,audience:all,topic:science,topic:math` etc. etc. It can be helpful to parse this out so we can analyze each attribute separately. You can split the columns in Excel, but then you also have to split them again and unpivot. This app lets to do that all at once.
 
 ### How it works
 - Upload an Excel file

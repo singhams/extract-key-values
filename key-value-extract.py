@@ -8,9 +8,6 @@ def extract_key_values(row, key):
     key_values = [item for item in items if item.startswith(key)]
     return key_values
 
-# Streamlit app title
-st.title("Excel Key-Value Extractor and Unpivot Tool")
-
 # Display the contents of the README.md file
 def display_readme():
     try:

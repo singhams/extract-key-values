@@ -5,11 +5,10 @@ from io import BytesIO
 # Function to extract key-value pairs
 def extract_key_values(row, pair_delimiter, kv_delimiter, key):
     items = row.split(pair_delimiter)
-    key_values = {}
+    key_values = []
     for item in items:
         if item.startswith(key + kv_delimiter):
-            k, v = item.split(kv_delimiter, 1)
-            key_values[k.strip()] = v.strip()
+            key_values.append(item.split(kv_delimiter, 1)[1].strip())
     return key_values
 
 # Display the contents of the README.md file
@@ -69,6 +68,9 @@ if st.button("Process File"):
 
         # Add a new column with cleaned keys
         unpivoted_df['key'] = unpivoted_df['key_n'].str.replace(r'_\d+$', '', regex=True)
+
+        # Drop rows with NaN values in the unpivoted columns
+        unpivoted_df.dropna(subset=['value'], inplace=True)
 
         # Convert DataFrame to Excel
         output = BytesIO()

@@ -1,7 +1,3 @@
-import streamlit as st
-import pandas as pd
-from io import BytesIO
-
 # Display the contents of the README.md file
 def display_readme():
     try:
@@ -12,6 +8,10 @@ def display_readme():
         st.error("README.md file not found.")
 
 display_readme()
+
+import streamlit as st
+import pandas as pd
+from io import BytesIO
 
 # Function to extract key-value pairs
 def extract_key_values(row):
@@ -62,6 +62,9 @@ if st.button("Process File"):
 
         # Drop rows with NaN values in the unpivoted columns
         unpivoted_df.dropna(subset=['value'], inplace=True)
+
+        # Add a new column with cleaned keys
+        unpivoted_df['cleaned_key'] = unpivoted_df['key'].str.replace(r'_\d+$', '', regex=True)
 
         # Convert DataFrame to Excel
         output = BytesIO()

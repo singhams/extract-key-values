@@ -6,11 +6,19 @@ from io import BytesIO
 def extract_key_values(row, pair_delimiter, kv_delimiter, key=None):
     items = row.split(pair_delimiter)
     key_values = {}
+    key_count = {}
     for item in items:
         if kv_delimiter in item:
             k, v = item.split(kv_delimiter, 1)
-            if key is None or k.strip() == key:
-                key_values[k.strip()] = v.strip()
+            k = k.strip()
+            v = v.strip()
+            if key is None or k == key:
+                if k in key_count:
+                    key_count[k] += 1
+                else:
+                    key_count[k] = 1
+                unique_key = f"{k}_{key_count[k]}"
+                key_values[unique_key] = v
     return key_values
 
 # Streamlit app
@@ -52,14 +60,14 @@ if st.button("Process File"):
         # Rename the columns to the actual keys
         extracted_df.columns = [f'{col}' for col in extracted_df.columns]
 
-        # Create a new column for the key without the sequence number
-        df['key'] = df[key_column].apply(lambda row: ', '.join(extract_key_values(row, pair_delimiter, kv_delimiter).keys()))
-
         # Concatenate the original DataFrame with the new extracted columns
         df = pd.concat([df, extracted_df], axis=1)
 
         # Drop the intermediate extracted column
         df.drop(columns=['extracted'], inplace=True)
+
+        # Create a new column for the key without the sequence number
+        df['key'] = df[key_column].apply(lambda row: ', '.join(extract_key_values(row, pair_delimiter, kv_delimiter).keys()))
 
         # Unpivot the new columns
         new_columns = [col for col in df.columns if col in extracted_df.columns]

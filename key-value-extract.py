@@ -7,7 +7,7 @@ def extract_key_values(row, pair_delimiter, kv_delimiter, key):
     items = row.split(pair_delimiter)
     key_values = [item for item in items if item.startswith(key + kv_delimiter)]
     return key_values
-    
+
 # Display the contents of the README.md file
 def display_readme():
     try:
@@ -60,11 +60,11 @@ if st.button("Process File"):
 
         unpivoted_df = df.melt(id_vars=[col for col in df.columns if col not in new_columns],
                                value_vars=new_columns,
-                               var_name=f'{key}_type',
-                               value_name=f'{key}_value')
+                               var_name='key_n',
+                               value_name='value')
 
-        # Drop rows with NaN values in the unpivoted columns
-        unpivoted_df.dropna(subset=[f'{key}_value'], inplace=True)
+        # Add a new column with cleaned keys
+        unpivoted_df['key'] = unpivoted_df['key_n'].str.replace(r'_\d+$', '', regex=True)
 
         # Convert DataFrame to Excel
         output = BytesIO()

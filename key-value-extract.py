@@ -18,7 +18,7 @@ uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 key_column = st.text_input("Enter the column name containing key-value pairs", value="column_name")
 
 # Input for key
-key = st.text_input("Enter the key to extract", value="key")
+key = st.text_input("Enter the key to extract", value="key_name")
 
 # Button to process the file
 if st.button("Process File"):

@@ -15,10 +15,10 @@ st.title("Excel Key-Value Extractor and Unpivot Tool")
 uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 
 # Input for column name
-key_column = st.text_input("Enter the column name containing key-value pairs", value="Tags/Keywords")
+key_column = st.text_input("Enter the column name containing key-value pairs", value="column_name")
 
 # Input for key
-key = st.text_input("Enter the key to extract", value="content_type")
+key = st.text_input("Enter the key to extract", value="key")
 
 # Button to process the file
 if st.button("Process File"):

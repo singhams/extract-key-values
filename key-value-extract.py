@@ -2,7 +2,17 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 
-# Function to extract all key-value pairs
+# Display the contents of the README.md file
+def display_readme():
+    try:
+        with open("README.md", "r") as f:
+            readme_content = f.read()
+        st.markdown(readme_content)
+    except FileNotFoundError:
+        st.error("README.md file not found.")
+
+display_readme()
+
 # Function to extract all key-value pairs
 def extract_all_key_values(row, pair_delimiter, kv_delimiter):
     items = row.split(pair_delimiter)

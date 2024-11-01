@@ -3,13 +3,22 @@ import pandas as pd
 from io import BytesIO
 
 # Function to extract all key-value pairs
+# Function to extract all key-value pairs
 def extract_all_key_values(row, pair_delimiter, kv_delimiter):
     items = row.split(pair_delimiter)
     key_values = {}
+    key_count = {}
     for item in items:
         if kv_delimiter in item:
             k, v = item.split(kv_delimiter, 1)
-            key_values[k.strip()] = v.strip()
+            k = k.strip()
+            v = v.strip()
+            if k in key_count:
+                key_count[k] += 1
+            else:
+                key_count[k] = 1
+            unique_key = f"{k}_{key_count[k]}"
+            key_values[unique_key] = v
     return key_values
 
 # Function to extract specific key-value pairs
@@ -51,6 +60,7 @@ if st.button("Process File"):
         # Load the Excel file into a DataFrame
         df = pd.read_excel(uploaded_file)
 
+#If the user selected the extract all key-value pairs option...
         if extraction_mode == "Extract all key-value pairs":
             # Apply the function to the specified column in the DataFrame
             df['extracted'] = df[key_column].apply(lambda row: extract_all_key_values(row, pair_delimiter, kv_delimiter))
@@ -77,7 +87,8 @@ if st.button("Process File"):
 
             # Add a new column with cleaned keys
             unpivoted_df['key'] = unpivoted_df['key_n'].str.replace(r'_\d+$', '', regex=True)
-
+            
+#If the user selected the extract specific key-value pairs option...
         else:
             # Apply the function to the specified column in the DataFrame
             df[key] = df[key_column].apply(lambda row: extract_specific_key_values(row, pair_delimiter, kv_delimiter, key))

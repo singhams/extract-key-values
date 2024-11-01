@@ -19,6 +19,9 @@ def display_readme():
         st.markdown(readme_content)
     except FileNotFoundError:
         st.error("README.md file not found.")
+
+display_readme()
+
 # File uploader for Excel input
 uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 

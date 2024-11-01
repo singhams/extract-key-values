@@ -25,17 +25,23 @@ uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 # Input for column name
 key_column = st.text_input("Enter the column name containing key-value pairs", value="column_name")
 
+# Input for pair delimiter
+pair_delimiter = st.text_input("Enter the delimiter used between key-value pairs", value=",")
+
+# Input for key-value delimiter
+kv_delimiter = st.text_input("Enter the delimiter used between keys and values", value=":")
+
 # Input for key
 key = st.text_input("Enter the key to extract", value="key_name")
 
 # Button to process the file
 if st.button("Process File"):
-    if uploaded_file is not None and key_column and key:
+    if uploaded_file is not None and key_column and pair_delimiter and kv_delimiter and key:
         # Load the Excel file into a DataFrame
         df = pd.read_excel(uploaded_file)
 
         # Apply the function to the specified column in the DataFrame
-        df[key] = df[key_column].apply(lambda row: extract_key_values(row, key))
+        df[key] = df[key_column].apply(lambda row: extract_key_values(row, pair_delimiter, kv_delimiter, key))
 
         # Expand the key column into separate columns
         key_df = df[key].apply(pd.Series)

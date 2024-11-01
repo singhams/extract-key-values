@@ -8,8 +8,11 @@ def extract_key_values(row, key):
     key_values = [item for item in items if item.startswith(key)]
     return key_values
 
-# Streamlit app
+# Streamlit app title
 st.title("Excel Key-Value Extractor and Unpivot Tool")
+
+# App description
+st.write("This Streamlit app allows users to upload an Excel file, specify a column containing key-value pairs, and extract specific keys. The app also provides an option to unpivot the extracted key columns.)
 
 # File uploader for Excel input
 uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")

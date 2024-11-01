@@ -2,6 +2,15 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 
+# Function to extract key-value pairs
+def extract_key_values(row, key):
+    items = row.split(',')
+    key_values = [item for item in items if item.startswith(key)]
+    return key_values
+
+# Streamlit app title
+st.title("Excel Key-Value Extractor and Unpivot Tool")
+
 # Display the contents of the README.md file
 def display_readme():
     try:
@@ -13,64 +22,46 @@ def display_readme():
 
 display_readme()
 
-# Function to extract key-value pairs
-def extract_key_values(row, pair_delimiter, key_value_delimiter):
-    items = row.split(pair_delimiter)
-    key_values = {}
-    key_count = {}
-    for item in items:
-        if key_value_delimiter in item:
-            key, value = item.split(key_value_delimiter, 1)
-            key = key.strip()
-            value = value.strip()
-            if key in key_count:
-                key_count[key] += 1
-            else:
-                key_count[key] = 1
-            unique_key = f"{key}_{key_count[key]}"
-            key_values[unique_key] = value
-    return key_values
-
-# Streamlit app
-st.header("Process a File")
-
 # File uploader for Excel input
 uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 
 # Input for column name
 key_column = st.text_input("Enter the column name containing key-value pairs", value="column_name")
 
-# Input for pair delimiter
-pair_delimiter = st.text_input("Enter the delimiter for key-value pairs", value=",")
-
-# Input for key-value delimiter
-key_value_delimiter = st.text_input("Enter the delimiter for keys and values", value=":")
+# Input for key
+key = st.text_input("Enter the key to extract", value="key_name")
 
 # Button to process the file
 if st.button("Process File"):
-    if uploaded_file is not None and key_column and pair_delimiter and key_value_delimiter:
+    if uploaded_file is not None and key_column and key:
         # Load the Excel file into a DataFrame
         df = pd.read_excel(uploaded_file)
 
         # Apply the function to the specified column in the DataFrame
-        key_values_df = df[key_column].apply(lambda row: pd.Series(extract_key_values(row, pair_delimiter, key_value_delimiter)))
+        df[key] = df[key_column].apply(lambda row: extract_key_values(row, key))
+
+        # Expand the key column into separate columns
+        key_df = df[key].apply(pd.Series)
+
+        # Rename the columns to key 1, key 2, etc.
+        key_df.columns = [f'{key} {i+1}' for i in range(key_df.shape[1])]
 
         # Concatenate the original DataFrame with the new key columns
-        df = pd.concat([df, key_values_df], axis=1)
+        df = pd.concat([df, key_df], axis=1)
+
+        # Drop the intermediate key column
+        df.drop(columns=[key], inplace=True)
 
         # Unpivot the new columns
-        new_columns = key_values_df.columns.tolist()
+        new_columns = [col for col in df.columns if col.startswith(key)]
 
         unpivoted_df = df.melt(id_vars=[col for col in df.columns if col not in new_columns],
                                value_vars=new_columns,
-                               var_name='key',
-                               value_name='value')
+                               var_name=f'{key}_type',
+                               value_name=f'{key}_value')
 
         # Drop rows with NaN values in the unpivoted columns
-        unpivoted_df.dropna(subset=['value'], inplace=True)
-
-        # Add a new column with cleaned keys
-        unpivoted_df['cleaned_key'] = unpivoted_df['key'].str.replace(r'_\d+$', '', regex=True)
+        unpivoted_df.dropna(subset=[f'{key}_value'], inplace=True)
 
         # Convert DataFrame to Excel
         output = BytesIO()
@@ -87,4 +78,4 @@ if st.button("Process File"):
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
     else:
-        st.error("Please upload an Excel file and provide the column name and delimiters.")
+        st.error("Please upload an Excel file and provide both the column name and key.")

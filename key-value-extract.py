@@ -40,6 +40,10 @@ def extract_specific_key_values(row, pair_delimiter, kv_delimiter, key):
             key_values.append(item.split(kv_delimiter, 1)[1].strip())
     return key_values
 
+# Function to extract values without keys
+def extract_values(row, pair_delimiter):
+    return row.split(pair_delimiter)
+
 # Streamlit app
 st.title("Excel Key-Value Extractor and Unpivot Tool")
 
